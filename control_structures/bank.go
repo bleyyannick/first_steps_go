@@ -1,34 +1,30 @@
 package main
 
 import (
+	"control_structures/bank/fileops"
 	"fmt"
-	"os"
-	"strconv"
+
+	"github.com/Pallinder/go-randomdata"
 )
 
-func writeBalanceToAFile(balance float64) {
-	balanceText := fmt.Sprint(balance)
-	os.WriteFile("balance.text", []byte(balanceText), 0644)
-}
-
-func getBalanceFromFile() float64 {
-	data, _ := os.ReadFile("balance.txt")
-	balanceText := string(data)
-	balance, _ := strconv.ParseFloat(balanceText, 64)
-	return balance
-
-}
+const accountBalanceFile = "balance.txt"
 
 func main() {
 
-	accountBalance := getBalanceFromFile()
+	var accountBalance, err = fileops.GetFloatFromFile(accountBalanceFile)
+
+	if err != nil {
+		fmt.Println("ERROR")
+		fmt.Println(err)
+		fmt.Println("----------")
+	}
+
+	fmt.Println("Welcome to Go Bank")
+	fmt.Println("Your phone number", randomdata.PhoneNumber())
+
 	for i := 0; i < 2; i++ {
-		fmt.Println("Welcome to Go Bank")
-		fmt.Println("What do you want to do ?")
-		fmt.Println("1. Check balance")
-		fmt.Println("2. Deposit money")
-		fmt.Println("3. Withdraw money")
-		fmt.Println("4. Exit")
+
+		presentationOption()
 
 		var choice int
 		fmt.Println("Your choice: ")
@@ -49,7 +45,7 @@ func main() {
 
 			accountBalance += depositAmount
 			fmt.Println("Balance updated! New amount: ", accountBalance)
-			writeBalanceToAFile(accountBalance)
+			fileops.WriteFloatToAFile(accountBalance, accountBalanceFile)
 		case 3:
 			var moneyOut float64
 			fmt.Println(("Withdaw some money: "))
@@ -66,7 +62,7 @@ func main() {
 			}
 			accountBalance -= moneyOut
 			fmt.Println("Balance updated! New amount: ", accountBalance)
-			writeBalanceToAFile(accountBalance)
+			fileops.WriteFloatToAFile(accountBalance, accountBalanceFile)
 		default:
 			fmt.Println("Goodbye !")
 			return
